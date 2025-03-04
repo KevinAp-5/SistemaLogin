@@ -3,6 +3,7 @@ package com.usermanager.manager.service;
 import org.springframework.stereotype.Service;
 
 import com.usermanager.manager.dto.UserDTO;
+import com.usermanager.manager.exception.UserExistsException;
 import com.usermanager.manager.mappers.UserMapper;
 import com.usermanager.manager.model.User;
 import com.usermanager.manager.repository.UserRepository;
@@ -19,6 +20,10 @@ public class UserService {
     }
 
     public UserDTO createUser(@Valid UserDTO dto) {
+        if (userRepository.findByLogin(dto.login()).isPresent()) {
+            throw new UserExistsException(dto.login());
+        }
+
         User user = UserMapper.toModel(dto);
         user = userRepository.save(user);
         return UserMapper.toDTO(user);
