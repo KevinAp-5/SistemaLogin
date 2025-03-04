@@ -34,4 +34,17 @@ public class UserService {
         user = userRepository.save(user);
         return userMapper.userToUserDTO(user);
     }
+
+    public UpdateUserDTO updateUser(@NotNull @Valid UpdateUserDTO dto) {
+        User savedUser = userRepository.findByLogin(dto.login()).orElseThrow(
+          () -> new NoSuchElementException("Uses does not exists with login: " + dto.login())
+        );
+
+        savedUser.setName(dto.name());
+        savedUser.setLogin(dto.login());
+        savedUser.setPassword(dto.password());
+
+        User updatedUser = userRepository.save(savedUser);
+        return userMapper.userToUpdateUserDTO(updatedUser);
+    }
 }
