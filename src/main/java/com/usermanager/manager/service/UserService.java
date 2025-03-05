@@ -52,4 +52,29 @@ public class UserService {
         User updatedUser = userRepository.save(savedUser);
         return userMapper.userToUserResponseDTO(updatedUser);
     }
+
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(userMapper::userToUserDTO)
+                .toList();
+    }
+
+    public UserDTO findUserById(@Positive @NotNull Long id) {
+        User response = userRepository.findById(id).orElseThrow(
+            () -> new UserDoesNotExistException("with ID: " + id)
+        );
+
+        return userMapper.userToUserDTO(response);
+    }
+
+    @Transactional
+    public boolean deleteUserById(@Positive @NotNull Long id) {
+        User userToDelete = userRepository.findById(id).orElse(null);
+        if (userToDelete == null) {
+            return false;
+        }
+
+        userRepository.delete(userToDelete);
+        return true;
+    }
 }
