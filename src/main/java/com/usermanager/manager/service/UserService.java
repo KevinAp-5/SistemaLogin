@@ -1,11 +1,13 @@
 package com.usermanager.manager.service;
 
-import java.util.NoSuchElementException;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.usermanager.manager.dto.UpdateUserDTO;
 import com.usermanager.manager.dto.UserDTO;
+import com.usermanager.manager.dto.UserResponseDTO;
+import com.usermanager.manager.exception.UserDoesNotExistException;
 import com.usermanager.manager.exception.UserExistsException;
 import com.usermanager.manager.mappers.UserMapper;
 import com.usermanager.manager.model.User;
@@ -13,6 +15,7 @@ import com.usermanager.manager.repository.UserRepository;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 @Service
 public class UserService {
@@ -25,6 +28,7 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
+    @Transactional
     public UserDTO createUser(@NotNull @Valid UserDTO dto) {
         if (userRepository.findByLogin(dto.login()).isPresent()) {
             throw new UserExistsException(dto.login());
@@ -35,9 +39,10 @@ public class UserService {
         return userMapper.userToUserDTO(user);
     }
 
-    public UpdateUserDTO updateUser(@NotNull @Valid UpdateUserDTO dto) {
+    @Transactional
+    public UserResponseDTO updateUser(@NotNull @Valid UserResponseDTO dto) {
         User savedUser = userRepository.findByLogin(dto.login()).orElseThrow(
-          () -> new NoSuchElementException("Uses does not exists with login: " + dto.login())
+            () -> new UserDoesNotExistException("with login: " + dto.login())
         );
 
         savedUser.setName(dto.name());
@@ -45,6 +50,6 @@ public class UserService {
         savedUser.setPassword(dto.password());
 
         User updatedUser = userRepository.save(savedUser);
-        return userMapper.userToUpdateUserDTO(updatedUser);
+        return userMapper.userToUserResponseDTO(updatedUser);
     }
 }
