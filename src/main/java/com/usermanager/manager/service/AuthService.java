@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.usermanager.manager.dto.AuthenticationDTO;
+import com.usermanager.manager.infra.security.TokenService;
+import com.usermanager.manager.model.user.User;
 import com.usermanager.manager.repository.UserRepository;
 
 import jakarta.validation.Valid;
@@ -23,11 +25,13 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final TokenService tokenService;
     private AuthenticationManager authenticationManager;
 
-    public AuthService(UserRepository userRepository, @Lazy AuthenticationManager authenticationManager) {
+    public AuthService(UserRepository userRepository, @Lazy AuthenticationManager authenticationManager, TokenService tokenService) {
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
+        this.tokenService = tokenService;
     }
 
     @Override
@@ -37,13 +41,13 @@ public class AuthService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com login: " + username));
     }
 
-    public boolean login(@Valid AuthenticationDTO data) {
+    public String login(@Valid AuthenticationDTO data) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.login(), data.password());
 
         try {
             Authentication auth = authenticationManager.authenticate(usernamePassword);
             log.info("user {} sucessfully authenticated", data.login());
-            return auth.isAuthenticated();
+            return tokenService.generateToken((User) auth.getPrincipal());
 
         } catch (AuthenticationException e) {
             log.info("Authentication failed for user {user}: {}", data.login(), e.getMessage());

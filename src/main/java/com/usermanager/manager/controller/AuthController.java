@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.usermanager.manager.dto.AuthenticationDTO;
-import com.usermanager.manager.dto.ResponseMessage;
+import com.usermanager.manager.dto.LoginResponseDTO;
 import com.usermanager.manager.dto.UserDTO;
 import com.usermanager.manager.service.AuthService;
 import com.usermanager.manager.service.UserService;
@@ -40,10 +40,10 @@ public class AuthController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<ResponseMessage> login(@RequestBody @Valid AuthenticationDTO data) {
-        if (authService.login(data))
-            return ResponseEntity.ok().body(new ResponseMessage("User logged."));
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ResponseMessage("Invalid credentials"));
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid AuthenticationDTO data) {
+        var token = authService.login(data);
+        if (token != null)
+            return ResponseEntity.ok().body(new LoginResponseDTO(token));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
-
 }
