@@ -2,6 +2,7 @@ package com.usermanager.manager.dto;
 
 import com.usermanager.manager.model.user.UserRole;
 
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
@@ -18,6 +19,6 @@ public record UserDTO(
     @NotBlank(message = "Password can not be blank")
     String password,
 
-    @NotBlank
+    @Enumerated
     UserRole role) {
 }

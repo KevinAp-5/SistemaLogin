@@ -1,5 +1,6 @@
 package com.usermanager.manager.model.user;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,11 +33,11 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Email
     @NotBlank
     private String name;
 
     @NotBlank
+    @Email
     private String login;
 
     @NotBlank
@@ -47,13 +48,17 @@ public class User implements UserDetails {
     private UserRole role;
 
     @Column(name = "is_enabled")
-    private Boolean isEnabled;
+    private Boolean isEnabled = false;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> roleList = List.of(new SimpleGrantedAuthority("ROLE_USER"));
-        if (this.role == UserRole.ADMIN)
+        List<GrantedAuthority> roleList = new ArrayList<>();
+        
+        if (this.role == UserRole.ADMIN) {
             roleList.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        } else if (this.role == UserRole.USER) {
+            roleList.add(new SimpleGrantedAuthority("ROLE_USER"));
+        }
 
         return roleList;
     }
@@ -64,7 +69,27 @@ public class User implements UserDetails {
     }
 
     @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @Override
     public boolean isEnabled() {
         return isEnabled;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
     }
 }
