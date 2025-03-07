@@ -4,6 +4,7 @@ package com.usermanager.manager.infra;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,4 +32,8 @@ public class ControllerAdvicer {
         return ResponseEntity.status(404).body(new ResponseMessage("Username not found " + ex.getMessage()));
     }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ResponseMessage> handleBadCredentialsException(BadCredentialsException ex) {
+        return ResponseEntity.status(401).body(new ResponseMessage(ex.getMessage()));
+    }    
 }

@@ -2,7 +2,7 @@ package com.usermanager.manager.service;
 
 import java.util.List;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,10 +23,12 @@ public class UserService {
 
     private UserRepository userRepository;
     private UserMapper userMapper;
+    private PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -36,7 +38,7 @@ public class UserService {
         }
 
         User user = userMapper.userDTOToUser(dto);
-        String encryptedPassword = new BCryptPasswordEncoder().encode(user.getPassword());
+        String encryptedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encryptedPassword);
 
         user = userRepository.save(user);
@@ -51,7 +53,7 @@ public class UserService {
 
         savedUser.setName(dto.name());
         savedUser.setLogin(dto.login());
-        savedUser.setPassword(dto.password());
+        savedUser.setPassword(passwordEncoder.encode(dto.password()));
 
         User updatedUser = userRepository.save(savedUser);
         return userMapper.userToUserResponseDTO(updatedUser);
