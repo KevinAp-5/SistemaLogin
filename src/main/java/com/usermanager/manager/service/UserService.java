@@ -2,15 +2,16 @@ package com.usermanager.manager.service;
 
 import java.util.List;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.usermanager.manager.dto.UserDTO;
 import com.usermanager.manager.dto.UserResponseDTO;
-import com.usermanager.manager.exception.UserDoesNotExistException;
 import com.usermanager.manager.exception.UserExistsException;
+import com.usermanager.manager.exception.UserNotFoundException;
 import com.usermanager.manager.mappers.UserMapper;
-import com.usermanager.manager.model.User;
+import com.usermanager.manager.model.user.User;
 import com.usermanager.manager.repository.UserRepository;
 
 import jakarta.validation.Valid;
@@ -35,14 +36,17 @@ public class UserService {
         }
 
         User user = userMapper.userDTOToUser(dto);
+        String encryptedPassword = new BCryptPasswordEncoder().encode(user.getPassword());
+        user.setPassword(encryptedPassword);
+
         user = userRepository.save(user);
         return userMapper.userToUserDTO(user);
     }
 
     @Transactional
     public UserResponseDTO updateUser(@NotNull @Valid UserResponseDTO dto) {
-        User savedUser = userRepository.findByLogin(dto.login()).orElseThrow(
-            () -> new UserDoesNotExistException("with login: " + dto.login())
+        User savedUser = (User) userRepository.findByLogin(dto.login()).orElseThrow(
+            () -> new UserNotFoundException("with login: " + dto.login())
         );
 
         savedUser.setName(dto.name());
@@ -61,7 +65,7 @@ public class UserService {
 
     public UserDTO findUserById(@Positive @NotNull Long id) {
         User response = userRepository.findById(id).orElseThrow(
-            () -> new UserDoesNotExistException("with ID: " + id)
+            () -> new UserNotFoundException("with ID: " + id)
         );
 
         return userMapper.userToUserDTO(response);

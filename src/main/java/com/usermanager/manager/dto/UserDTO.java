@@ -1,5 +1,7 @@
 package com.usermanager.manager.dto;
 
+import com.usermanager.manager.model.user.UserRole;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
@@ -14,5 +16,8 @@ public record UserDTO(
     String login, 
 
     @NotBlank(message = "Password can not be blank")
-    String password) {
+    String password,
+
+    @NotBlank
+    UserRole role) {
 }
