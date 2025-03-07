@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.usermanager.manager.model.security.TokenProvider;
 import com.usermanager.manager.repository.UserRepository;
 
 import jakarta.servlet.FilterChain;
@@ -18,11 +19,11 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class SecurityFilter extends OncePerRequestFilter{
 
-    private TokenService tokenService;
+    private TokenProvider tokenProvider;
     private UserRepository userRepository;
 
-    public SecurityFilter(TokenService tokenService, UserRepository userRepository) {
-        this.tokenService = tokenService;
+    public SecurityFilter(TokenProvider tokenProvider, UserRepository userRepository) {
+        this.tokenProvider = tokenProvider;
         this.userRepository = userRepository;
     }
 
@@ -32,9 +33,9 @@ public class SecurityFilter extends OncePerRequestFilter{
             throws ServletException, IOException {
         var token = this.recoverToken(request);
         if (token != null) {
-            var login = tokenService.validateToken(token);
+            var login = tokenProvider.validateToken(token);
             UserDetails user = userRepository.findByLogin(login).orElse(null);
-            
+ 
             var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }

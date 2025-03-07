@@ -12,18 +12,20 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.usermanager.manager.exception.JWTException;
+import com.usermanager.manager.model.security.TokenProvider;
 import com.usermanager.manager.model.user.User;
 
 @Service
-public class TokenService {
+public class TokenService implements TokenProvider{
     @Value("${api.security.token.secret}")
     private String secret;
+    private static final String TOKEN_ISSUER = "UserManager";
 
     public String generateToken(User user) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.create()
-                .withIssuer("UserManager")
+                .withIssuer(TOKEN_ISSUER)
                 .withSubject(user.getLogin())
                 .withExpiresAt(genExpirationDate())
                 .sign(algorithm);
@@ -36,7 +38,20 @@ public class TokenService {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.require(algorithm)
-                .withIssuer("UserManager")
+                .withIssuer(TOKEN_ISSUER)
+                .build()
+                .verify(token)
+                .getSubject();
+        } catch (JWTVerificationException e) {
+            return "";
+        }
+    }
+
+    public String getUsernameFromToken(String token) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            return JWT.require(algorithm)
+                .withIssuer(TOKEN_ISSUER)
                 .build()
                 .verify(token)
                 .getSubject();
