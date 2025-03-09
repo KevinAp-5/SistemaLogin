@@ -35,5 +35,11 @@ public class ControllerAdvicer {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ResponseMessage> handleBadCredentialsException(BadCredentialsException ex) {
         return ResponseEntity.status(401).body(new ResponseMessage(ex.getMessage()));
-    }    
+    }
+
+    @ExceptionHandler(UserNotEnabledException.class)
+    public ResponseEntity<ResponseMessage> handleUserNotEnabledException(UserNotEnabledException ex) {
+        return ResponseEntity.status(401).body(new ResponseMessage("User not enabled: " + ex.getMessage()));
+    }
+
 }

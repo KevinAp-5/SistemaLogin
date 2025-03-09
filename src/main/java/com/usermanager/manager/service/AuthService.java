@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.usermanager.manager.dto.AuthenticationDTO;
+import com.usermanager.manager.exception.UserNotEnabledException;
+import com.usermanager.manager.exception.UserNotFoundException;
 import com.usermanager.manager.model.security.TokenProvider;
 import com.usermanager.manager.model.user.User;
 import com.usermanager.manager.repository.UserRepository;
@@ -36,9 +38,11 @@ public class AuthService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        log.info("Searching user in db: " + username);
-        return userRepository.findByLogin(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com login: " + username));
+        UserDetails user = userRepository.findByLogin(username)
+                .orElseThrow(() -> new BadCredentialsException("Bad credentials: verify login or password"));
+        if (!user.isEnabled())
+            throw new UserNotEnabledException(username);
+        return user;
     }
 
     public String login(@Valid AuthenticationDTO data) {
