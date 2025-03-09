@@ -6,8 +6,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.usermanager.manager.dto.UserDTO;
-import com.usermanager.manager.dto.UserResponseDTO;
+import com.usermanager.manager.dto.user.UserDTO;
+import com.usermanager.manager.dto.user.UserResponseDTO;
 import com.usermanager.manager.exception.UserExistsException;
 import com.usermanager.manager.exception.UserNotFoundException;
 import com.usermanager.manager.mappers.UserMapper;

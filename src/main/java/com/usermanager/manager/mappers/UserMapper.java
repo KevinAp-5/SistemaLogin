@@ -3,8 +3,8 @@ package com.usermanager.manager.mappers;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
-import com.usermanager.manager.dto.UserDTO;
-import com.usermanager.manager.dto.UserResponseDTO;
+import com.usermanager.manager.dto.user.UserDTO;
+import com.usermanager.manager.dto.user.UserResponseDTO;
 import com.usermanager.manager.model.user.User;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)

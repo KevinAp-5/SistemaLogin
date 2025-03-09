@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.usermanager.manager.dto.ResponseMessage;
+import com.usermanager.manager.dto.common.ResponseMessage;
 import com.usermanager.manager.exception.UserExistsException;
 import com.usermanager.manager.exception.UserNotEnabledException;
 import com.usermanager.manager.exception.UserNotFoundException;

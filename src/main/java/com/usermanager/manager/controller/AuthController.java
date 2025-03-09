@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.usermanager.manager.dto.AuthenticationDTO;
-import com.usermanager.manager.dto.LoginResponseDTO;
-import com.usermanager.manager.dto.UserDTO;
+import com.usermanager.manager.dto.authentication.AuthenticationDTO;
+import com.usermanager.manager.dto.authentication.LoginResponseDTO;
+import com.usermanager.manager.dto.user.UserDTO;
 import com.usermanager.manager.service.AuthService;
 import com.usermanager.manager.service.UserService;
 

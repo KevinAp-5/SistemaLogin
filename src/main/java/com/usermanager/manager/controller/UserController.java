@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.usermanager.manager.dto.ResponseMessage;
-import com.usermanager.manager.dto.UserDTO;
-import com.usermanager.manager.dto.UserResponseDTO;
+import com.usermanager.manager.dto.common.ResponseMessage;
+import com.usermanager.manager.dto.user.UserDTO;
+import com.usermanager.manager.dto.user.UserResponseDTO;
 import com.usermanager.manager.service.UserService;
 
 import jakarta.validation.Valid;

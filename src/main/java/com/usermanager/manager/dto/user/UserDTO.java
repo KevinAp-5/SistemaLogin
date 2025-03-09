@@ -1,4 +1,4 @@
-package com.usermanager.manager.dto;
+package com.usermanager.manager.dto.user;
 
 import com.usermanager.manager.model.user.UserRole;
 
