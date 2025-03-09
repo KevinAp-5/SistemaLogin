@@ -1,4 +1,4 @@
-package com.usermanager.manager.infra.security;
+package com.usermanager.manager.infra.service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -12,6 +12,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.usermanager.manager.exception.JWTException;
+import com.usermanager.manager.exception.TokenInvalid;
 import com.usermanager.manager.model.security.TokenProvider;
 import com.usermanager.manager.model.user.User;
 
@@ -43,7 +44,7 @@ public class TokenService implements TokenProvider{
                 .verify(token)
                 .getSubject();
         } catch (JWTVerificationException e) {
-            return "";
+            throw new TokenInvalid("Token invalid or expired.");
         }
     }
 
@@ -56,7 +57,7 @@ public class TokenService implements TokenProvider{
                 .verify(token)
                 .getSubject();
         } catch (JWTVerificationException e) {
-            return "";
+            throw new TokenInvalid("Token invalid or expired.");
         }
     }
 

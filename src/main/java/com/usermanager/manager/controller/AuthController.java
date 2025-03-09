@@ -15,9 +15,11 @@ import com.usermanager.manager.service.AuthService;
 import com.usermanager.manager.service.UserService;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/auth/")
+@Slf4j
 public class AuthController {
 
     private final AuthService authService;

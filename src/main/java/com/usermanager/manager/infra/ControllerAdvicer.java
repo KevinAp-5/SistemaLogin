@@ -10,8 +10,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.usermanager.manager.dto.ResponseMessage;
-import com.usermanager.manager.exception.UserNotFoundException;
 import com.usermanager.manager.exception.UserExistsException;
+import com.usermanager.manager.exception.UserNotEnabledException;
+import com.usermanager.manager.exception.UserNotFoundException;
 
 @ControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -42,4 +43,13 @@ public class ControllerAdvicer {
         return ResponseEntity.status(401).body(new ResponseMessage("User not enabled: " + ex.getMessage()));
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ResponseMessage> handleException(Exception ex) {
+        return ResponseEntity.status(500).body(new ResponseMessage("Error: " + ex.getMessage()));
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ResponseMessage> handleRuntimeException(RuntimeException ex) {
+        return ResponseEntity.status(500).body(new ResponseMessage("Error: " + ex.getMessage()));
+    }
 }

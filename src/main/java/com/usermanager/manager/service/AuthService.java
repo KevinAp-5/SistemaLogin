@@ -1,15 +1,14 @@
 package com.usermanager.manager.service;
 
-
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.usermanager.manager.dto.AuthenticationDTO;
@@ -28,12 +27,15 @@ public class AuthService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final TokenProvider tokenProvider;
+    private final PasswordEncoder passwordEncoder;
     private AuthenticationManager authenticationManager;
 
-    public AuthService(UserRepository userRepository, @Lazy AuthenticationManager authenticationManager, TokenProvider tokenProvider) {
+    public AuthService(UserRepository userRepository, @Lazy AuthenticationManager authenticationManager,
+            TokenProvider tokenProvider, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -46,17 +48,19 @@ public class AuthService implements UserDetailsService {
     }
 
     public String login(@Valid AuthenticationDTO data) {
+        log.info("login attempt by {}", data.login());
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.login(), data.password());
+        var user = (User) userRepository.findByLogin(data.login())
+                .orElseThrow(() -> new UserNotFoundException("with login: " + data.login())
+        );
 
-        try {
-            Authentication auth = authenticationManager.authenticate(usernamePassword);
-            log.info("user {} sucessfully authenticated", data.login());
-            return tokenProvider.generateToken((User) auth.getPrincipal());
-
-        } catch (AuthenticationException e) {
-            log.info("Authentication failed for user {user}: {}", data.login(), e.getMessage());
-            throw new BadCredentialsException("Invalid credentials!");
+        if (!passwordEncoder.matches(data.password(), user.getPassword())) {
+            throw new BadCredentialsException("Bad cretentials: verify login or password.");
         }
+
+        Authentication auth = authenticationManager.authenticate(usernamePassword);
+        log.info("user {} sucessfully authenticated", data.login());
+        return tokenProvider.generateToken((User) auth.getPrincipal());
     }
 
 }
