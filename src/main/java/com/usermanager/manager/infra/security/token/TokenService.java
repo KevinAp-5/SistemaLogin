@@ -1,4 +1,4 @@
-package com.usermanager.manager.infra.service.token;
+package com.usermanager.manager.infra.security.token;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

@@ -1,4 +1,4 @@
-package com.usermanager.manager.infra;
+package com.usermanager.manager.infra.config;
 
 
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;

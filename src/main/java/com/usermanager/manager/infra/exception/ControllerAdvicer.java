@@ -1,4 +1,4 @@
-package com.usermanager.manager.infra;
+package com.usermanager.manager.infra.exception;
 
 
 import org.springframework.core.Ordered;

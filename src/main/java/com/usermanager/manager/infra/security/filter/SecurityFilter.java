@@ -1,4 +1,4 @@
-package com.usermanager.manager.infra.security;
+package com.usermanager.manager.infra.security.filter;
 
 import java.io.IOException;
 

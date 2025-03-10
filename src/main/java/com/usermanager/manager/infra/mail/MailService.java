@@ -1,4 +1,4 @@
-package com.usermanager.manager.infra.service.mail;
+package com.usermanager.manager.infra.mail;
 
 import java.util.concurrent.CompletableFuture;
 
