@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.usermanager.manager.exception.TokenInvalid;
+import com.usermanager.manager.exception.authentication.TokenInvalid;
 import com.usermanager.manager.model.security.TokenProvider;
 import com.usermanager.manager.repository.UserRepository;
 

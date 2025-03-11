@@ -6,8 +6,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.usermanager.manager.exception.TokenInvalid;
-import com.usermanager.manager.exception.TokenNotFoundException;
+import com.usermanager.manager.exception.authentication.TokenInvalid;
+import com.usermanager.manager.exception.authentication.TokenNotFoundException;
 import com.usermanager.manager.model.enums.TokenType;
 import com.usermanager.manager.model.user.User;
 import com.usermanager.manager.model.verification.VerificationToken;

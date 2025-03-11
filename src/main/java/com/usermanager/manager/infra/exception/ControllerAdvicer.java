@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.usermanager.manager.dto.common.ResponseMessage;
-import com.usermanager.manager.exception.TokenInvalid;
-import com.usermanager.manager.exception.TokenNotFoundException;
-import com.usermanager.manager.exception.UserExistsException;
-import com.usermanager.manager.exception.UserNotEnabledException;
-import com.usermanager.manager.exception.UserNotFoundException;
+import com.usermanager.manager.exception.authentication.TokenInvalid;
+import com.usermanager.manager.exception.authentication.TokenNotFoundException;
+import com.usermanager.manager.exception.user.UserExistsException;
+import com.usermanager.manager.exception.user.UserNotEnabledException;
+import com.usermanager.manager.exception.user.UserNotFoundException;
 
 @ControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)

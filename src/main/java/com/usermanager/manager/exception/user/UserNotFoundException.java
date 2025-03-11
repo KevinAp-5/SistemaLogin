@@ -1,4 +1,4 @@
-package com.usermanager.manager.exception;
+package com.usermanager.manager.exception.user;
 
 public class UserNotFoundException extends RuntimeException{
     public UserNotFoundException(String message) {

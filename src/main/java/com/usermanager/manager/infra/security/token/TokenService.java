@@ -11,8 +11,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.usermanager.manager.exception.JWTException;
-import com.usermanager.manager.exception.TokenInvalid;
+import com.usermanager.manager.exception.authentication.JWTException;
+import com.usermanager.manager.exception.authentication.TokenInvalid;
 import com.usermanager.manager.model.security.TokenProvider;
 import com.usermanager.manager.model.user.User;
 

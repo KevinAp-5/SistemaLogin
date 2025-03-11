@@ -1,4 +1,4 @@
-package com.usermanager.manager.exception;
+package com.usermanager.manager.exception.authentication;
 
 public class TokenInvalid extends RuntimeException{
     public TokenInvalid(String message) {

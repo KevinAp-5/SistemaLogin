@@ -12,8 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.usermanager.manager.dto.authentication.AuthenticationDTO;
-import com.usermanager.manager.exception.UserNotEnabledException;
-import com.usermanager.manager.exception.UserNotFoundException;
+import com.usermanager.manager.exception.user.UserNotEnabledException;
+import com.usermanager.manager.exception.user.UserNotFoundException;
 import com.usermanager.manager.model.security.TokenProvider;
 import com.usermanager.manager.model.user.User;
 import com.usermanager.manager.repository.UserRepository;

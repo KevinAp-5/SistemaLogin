@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.usermanager.manager.dto.user.UserDTO;
 import com.usermanager.manager.dto.user.UserResponseDTO;
-import com.usermanager.manager.exception.UserExistsException;
-import com.usermanager.manager.exception.UserNotFoundException;
+import com.usermanager.manager.exception.user.UserExistsException;
+import com.usermanager.manager.exception.user.UserNotFoundException;
 import com.usermanager.manager.infra.mail.MailService;
 import com.usermanager.manager.mappers.UserMapper;
 import com.usermanager.manager.model.user.User;
