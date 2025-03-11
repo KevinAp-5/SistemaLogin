@@ -1,4 +1,4 @@
-package com.usermanager.manager.service;
+package com.usermanager.manager.service.auth;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -50,14 +50,18 @@ public class AuthService implements UserDetailsService {
     public String login(@Valid AuthenticationDTO data) {
         log.info("login attempt by {}", data.login());
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.login(), data.password());
+
+        // Verify if the login provided exists in the database to proceed
         var user = (User) userRepository.findByLogin(data.login())
                 .orElseThrow(() -> new UserNotFoundException("with login: " + data.login())
         );
 
+        // Validates if the passwords matches to proceed with the login
         if (!passwordEncoder.matches(data.password(), user.getPassword())) {
             throw new BadCredentialsException("Bad cretentials: verify login or password.");
         }
 
+        // At this stage, the passwords are equals and it will be possible to authenticate the user
         Authentication auth = authenticationManager.authenticate(usernamePassword);
         log.info("user {} sucessfully authenticated", data.login());
         return tokenProvider.generateToken((User) auth.getPrincipal());

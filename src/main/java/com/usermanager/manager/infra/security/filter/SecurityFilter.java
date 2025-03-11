@@ -70,13 +70,11 @@ public class SecurityFilter extends OncePerRequestFilter {
     private UsernamePasswordAuthenticationToken createAuthentication(String token) {
         String login = tokenProvider.validateToken(token);
         UserDetails user = userRepository.findByLogin(login).orElseThrow(
-            () -> new BadCredentialsException("Bad credentials: verify login or password")
-        );
+                () -> new BadCredentialsException("Bad credentials: verify login or password"));
 
         return new UsernamePasswordAuthenticationToken(
                 user,
                 null,
-                user.getAuthorities()
-        );
+                user.getAuthorities());
     }
 }

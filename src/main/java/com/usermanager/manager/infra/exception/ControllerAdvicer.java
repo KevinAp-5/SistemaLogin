@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.usermanager.manager.dto.common.ResponseMessage;
+import com.usermanager.manager.exception.TokenInvalid;
+import com.usermanager.manager.exception.TokenNotFoundException;
 import com.usermanager.manager.exception.UserExistsException;
 import com.usermanager.manager.exception.UserNotEnabledException;
 import com.usermanager.manager.exception.UserNotFoundException;
@@ -51,5 +53,15 @@ public class ControllerAdvicer {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ResponseMessage> handleRuntimeException(RuntimeException ex) {
         return ResponseEntity.status(500).body(new ResponseMessage("Error: " + ex.getMessage()));
+    }
+
+    @ExceptionHandler(TokenNotFoundException.class)
+    public ResponseEntity<ResponseMessage> handleTokenNotFoundException(TokenNotFoundException ex) {
+        return ResponseEntity.status(404).body(new ResponseMessage("Token error: " + ex.getMessage()));
+    }
+
+    @ExceptionHandler(TokenInvalid.class)
+    public ResponseEntity<ResponseMessage> handleTokenInvalid(TokenInvalid ex) {
+        return ResponseEntity.status(410).body(new ResponseMessage("Token expired or invalid: " + ex.getMessage()));
     }
 }
