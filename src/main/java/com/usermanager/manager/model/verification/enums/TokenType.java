@@ -1,4 +1,4 @@
-package com.usermanager.manager.model.enums;
+package com.usermanager.manager.model.verification.enums;
 
 public enum TokenType {
 

@@ -3,8 +3,8 @@ package com.usermanager.manager.model.verification;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.usermanager.manager.model.enums.TokenType;
 import com.usermanager.manager.model.user.User;
+import com.usermanager.manager.model.verification.enums.TokenType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

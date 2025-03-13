@@ -8,9 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.usermanager.manager.exception.authentication.TokenInvalid;
 import com.usermanager.manager.exception.authentication.TokenNotFoundException;
-import com.usermanager.manager.model.enums.TokenType;
 import com.usermanager.manager.model.user.User;
 import com.usermanager.manager.model.verification.VerificationToken;
+import com.usermanager.manager.model.verification.enums.TokenType;
 import com.usermanager.manager.repository.UserRepository;
 import com.usermanager.manager.repository.VerificationTokenRepository;
 
