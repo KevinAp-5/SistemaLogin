@@ -17,6 +17,7 @@ import com.usermanager.manager.dto.user.UserResponseDTO;
 import com.usermanager.manager.service.user.UserService;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -52,5 +53,13 @@ public class UserController {
         if (!response)
             return ResponseEntity.status(404).body(new ResponseMessage("User to be deleted not found with ID: " + id));
         return ResponseEntity.ok(new ResponseMessage("User deleted successfully with ID: " + id));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<ResponseMessage> deleteUserByLogin(@NotBlank String email) {
+        boolean response = userService.deleteUserByLogin(email);
+        if (response) return ResponseEntity.ok().build();
+
+        return  ResponseEntity.status(404).body(new ResponseMessage("User to be delete not found."));
     }
 }

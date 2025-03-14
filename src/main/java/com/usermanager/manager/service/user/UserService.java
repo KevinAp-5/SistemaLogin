@@ -18,6 +18,7 @@ import com.usermanager.manager.repository.UserRepository;
 import com.usermanager.manager.service.auth.VerificationTokenService;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -90,7 +91,18 @@ public class UserService {
             return false;
         }
 
-        userRepository.delete(userToDelete);
+        userToDelete.setIsEnabled(false);
+        userRepository.save(userToDelete);
+        return true;
+    }
+
+    @Transactional
+    public boolean deleteUserByLogin(@NotBlank String email) {
+        User userToDelete = (User) userRepository.findByLogin(email).orElse(null);
+        if (userToDelete == null) return false;
+
+        userToDelete.setIsEnabled(false);
+        userRepository.save(userToDelete);
         return true;
     }
 }
