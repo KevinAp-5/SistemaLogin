@@ -18,7 +18,7 @@ import com.usermanager.manager.exception.user.UserNotFoundException;
 
 @ControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class ControllerAdvicer {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserExistsException.class)
     public ResponseEntity<ResponseMessage> handleUserExistsException(UserExistsException ex) {
@@ -42,7 +42,7 @@ public class ControllerAdvicer {
 
     @ExceptionHandler(UserNotEnabledException.class)
     public ResponseEntity<ResponseMessage> handleUserNotEnabledException(UserNotEnabledException ex) {
-        return ResponseEntity.status(401).body(new ResponseMessage("User not enabled: " + ex.getMessage()));
+        return ResponseEntity.status(401).body(new ResponseMessage("Please activate the account. " + ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
