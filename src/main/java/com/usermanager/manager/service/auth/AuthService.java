@@ -40,28 +40,28 @@ public class AuthService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDetails user = userRepository.findByLogin(username)
+        return userRepository.findByLogin(username)
                 .orElseThrow(() -> new BadCredentialsException("Bad credentials: verify login or password"));
-        if (!user.isEnabled())
-            throw new UserNotEnabledException(username);
-        return user;
+
     }
 
     public String login(@Valid AuthenticationDTO data) {
         log.info("login attempt by {}", data.login());
+
+        var user = (User) userRepository.findByLogin(data.login())
+        .orElseThrow(() -> new UserNotFoundException("with login: " + data.login()));
+        
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.login(), data.password());
 
-        // Verify if the login provided exists in the database to proceed
-        var user = (User) userRepository.findByLogin(data.login())
-                .orElseThrow(() -> new UserNotFoundException("with login: " + data.login())
-        );
+        if (!user.isEnabled()) {
+            log.info("user not enabled. unable to login");
+            throw new UserNotEnabledException("User not enabled " + user.getLogin());
+        }
 
-        // Validates if the passwords matches to proceed with the login
         if (!passwordEncoder.matches(data.password(), user.getPassword())) {
             throw new BadCredentialsException("Bad cretentials: verify login or password.");
         }
 
-        // At this stage, the passwords are equals and it will be possible to authenticate the user
         Authentication auth = authenticationManager.authenticate(usernamePassword);
         log.info("user {} sucessfully authenticated", data.login());
         return tokenProvider.generateToken((User) auth.getPrincipal());
