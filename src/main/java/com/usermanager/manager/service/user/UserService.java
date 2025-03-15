@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.usermanager.manager.dto.user.DeleteByLoginDTO;
 import com.usermanager.manager.dto.user.UserDTO;
 import com.usermanager.manager.dto.user.UserResponseDTO;
 import com.usermanager.manager.exception.user.UserExistsException;
@@ -18,7 +19,6 @@ import com.usermanager.manager.repository.UserRepository;
 import com.usermanager.manager.service.auth.VerificationTokenService;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -97,8 +97,8 @@ public class UserService {
     }
 
     @Transactional
-    public boolean deleteUserByLogin(@NotBlank String email) {
-        User userToDelete = (User) userRepository.findByLogin(email).orElse(null);
+    public boolean deleteUserByLogin(@Valid DeleteByLoginDTO data) {
+        User userToDelete = (User) userRepository.findByLogin(data.email()).orElse(null);
         if (userToDelete == null) return false;
 
         userToDelete.setIsEnabled(false);

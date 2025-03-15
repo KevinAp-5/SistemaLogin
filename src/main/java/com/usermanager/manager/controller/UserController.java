@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.usermanager.manager.dto.common.ResponseMessage;
+import com.usermanager.manager.dto.user.DeleteByLoginDTO;
 import com.usermanager.manager.dto.user.UserDTO;
 import com.usermanager.manager.dto.user.UserResponseDTO;
 import com.usermanager.manager.service.user.UserService;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -56,10 +56,10 @@ public class UserController {
     }
 
     @DeleteMapping
-    public ResponseEntity<ResponseMessage> deleteUserByLogin(@NotBlank String email) {
-        boolean response = userService.deleteUserByLogin(email);
+    public ResponseEntity<ResponseMessage> deleteUserByLogin(@RequestBody @Valid DeleteByLoginDTO data) {
+        boolean response = userService.deleteUserByLogin(data);
         if (response) return ResponseEntity.ok().build();
 
-        return  ResponseEntity.status(404).body(new ResponseMessage("User to be delete not found."));
+        return  ResponseEntity.status(404).body(new ResponseMessage("User to be deleted not found."));
     }
 }

@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ResponseMessage> handleUserDoesNotExistsException(UserNotFoundException ex) {
-        return ResponseEntity.status(404).body(new ResponseMessage("User does not exists " + ex.getMessage()));
+        return ResponseEntity.status(404).body(new ResponseMessage("User not found with login:  " + ex.getMessage()));
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
