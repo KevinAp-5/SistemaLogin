@@ -15,6 +15,7 @@ import com.usermanager.manager.infra.mail.MailService;
 import com.usermanager.manager.mappers.UserMapper;
 import com.usermanager.manager.model.user.User;
 import com.usermanager.manager.model.verification.VerificationToken;
+import com.usermanager.manager.model.verification.enums.TokenType;
 import com.usermanager.manager.repository.UserRepository;
 import com.usermanager.manager.service.auth.VerificationTokenService;
 
@@ -51,7 +52,7 @@ public class UserService {
 
         user = userRepository.save(user);
 
-        VerificationToken verificationToken = verificationService.generateVerificationToken(user);
+        VerificationToken verificationToken = verificationService.generateVerificationToken(user, TokenType.EMAIL_VALIDATION);
 
         mailService.sendVerificationMail(user.getLogin(), verificationToken.getUuid().toString());
 

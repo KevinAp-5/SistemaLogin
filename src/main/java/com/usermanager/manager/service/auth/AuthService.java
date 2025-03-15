@@ -17,6 +17,7 @@ import com.usermanager.manager.exception.user.UserNotFoundException;
 import com.usermanager.manager.infra.mail.MailService;
 import com.usermanager.manager.model.security.TokenProvider;
 import com.usermanager.manager.model.user.User;
+import com.usermanager.manager.model.verification.enums.TokenType;
 import com.usermanager.manager.repository.UserRepository;
 
 import jakarta.validation.Valid;
@@ -83,7 +84,7 @@ public class AuthService implements UserDetailsService {
             return false;
         }
 
-        var verificationToken = verificationService.generateVerificationToken(user);
+        var verificationToken = verificationService.generateVerificationToken(user, TokenType.EMAIL_VALIDATION);
         mailService.sendVerificationMail(user.getLogin(), verificationToken.getUuid().toString());
         return true;
     }

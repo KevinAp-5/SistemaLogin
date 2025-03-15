@@ -30,14 +30,14 @@ public class VerificationTokenService {
     }
 
     @Transactional
-    public VerificationToken generateVerificationToken(@NotNull @Valid User user) {
+    public VerificationToken generateVerificationToken(@NotNull @Valid User user, TokenType tokenType) {
         UUID token = UUID.randomUUID();
         VerificationToken verificationToken = VerificationToken.builder()
             .uuid(token)
             .user(user)
             .creationDate(ZonedDateTime.now().toInstant())
             .expirationDate(ZonedDateTime.now().plusHours(24).toInstant())
-            .tokenType(TokenType.EMAIL_VALIDATION)
+            .tokenType(tokenType)
             .build();
         return verificationRepository.save(verificationToken);   
     }
