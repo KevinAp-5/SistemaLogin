@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.usermanager.manager.dto.authentication.ActivateUserDTO;
 import com.usermanager.manager.dto.authentication.AuthenticationDTO;
 import com.usermanager.manager.dto.authentication.LoginResponseDTO;
 import com.usermanager.manager.dto.common.ResponseMessage;
@@ -63,5 +64,15 @@ public class AuthController {
         if (token != null)
             return ResponseEntity.ok().body(new LoginResponseDTO(token));
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @PostMapping("activate")
+    public ResponseEntity<ResponseMessage> activateUser(@RequestBody @Valid ActivateUserDTO data) {
+        boolean activationSent = authService.activateUser(data.email());
+        if (!activationSent)
+            return ResponseEntity.status(200)
+                    .body(new ResponseMessage("User is already active with email: " + data.email()));
+
+        return ResponseEntity.ok(new ResponseMessage("Activation link sent to " + data.email() + " successfully."));
     }
 }
