@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.usermanager.manager.exception.authentication.TokenInvalid;
+import com.usermanager.manager.exception.authentication.TokenInvalidException;
 import com.usermanager.manager.exception.authentication.TokenNotFoundException;
 import com.usermanager.manager.model.user.User;
 import com.usermanager.manager.model.verification.VerificationToken;
@@ -64,5 +65,22 @@ public class VerificationTokenService {
         verificationRepository.save(verificationToken);
 
         return true;
+    }
+
+    public VerificationToken findVerificationByToken(@Valid @NotBlank String token) {
+        UUID uuid = UUID.fromString(token);
+        var verificationToken = verificationRepository.findByUuid(uuid)
+                .orElseThrow(() -> new TokenNotFoundException("Verification token not found"));
+        
+        if (verificationToken.getExpirationDate().isBefore(ZonedDateTime.now().toInstant())) {
+            throw new TokenInvalidException("Token is expired, please try again.");
+        }
+
+        return verificationToken;
+    }
+
+    @Transactional
+    public void saveVerificationToken(VerificationToken verificationToken) {
+        verificationRepository.save(verificationToken);
     }
 }

@@ -13,6 +13,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.usermanager.manager.dto.authentication.ActivateUserDTO;
 import com.usermanager.manager.dto.authentication.AuthenticationDTO;
 import com.usermanager.manager.dto.authentication.LoginResponseDTO;
+import com.usermanager.manager.dto.authentication.PasswordResetDTO;
+import com.usermanager.manager.dto.authentication.UserEmailDTO;
 import com.usermanager.manager.dto.common.ResponseMessage;
 import com.usermanager.manager.dto.user.UserDTO;
 import com.usermanager.manager.service.auth.AuthService;
@@ -53,9 +55,26 @@ public class AuthController {
     public ResponseEntity<ResponseMessage> confirmUser(@RequestParam("token") @NotBlank String token) {
         boolean validated = verificationService.confirmVerificationToken(token);
         if (validated) {
-            return ResponseEntity.ok(new ResponseMessage("User confirmed with sucess."));
+            return ResponseEntity.ok(new ResponseMessage("User confirmed with success."));
         }
         return ResponseEntity.badRequest().body(new ResponseMessage("Unable to activate user. Try again later"));
+    }
+
+    @PostMapping("password/forget")
+    public ResponseEntity<ResponseMessage> sendPasswordResetCode(@RequestBody @Valid UserEmailDTO data) {
+        boolean response = authService.sendPasswordResetCode(data);
+        if (!response)
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponseMessage("User is not enabled. please confirm the email."));
+
+        return ResponseEntity.ok(new ResponseMessage("Password reset link was sent to your e-mail."));
+    }
+
+    @PostMapping("password/reset")
+    public ResponseEntity<ResponseMessage> confirmPasswordReset(@RequestParam @NotBlank String token,
+    @RequestBody @Valid PasswordResetDTO data) {
+        authService.passwordReset(token, data);
+
+        return ResponseEntity.ok().body(new ResponseMessage("Password changed successfully."));
     }
 
     @PostMapping("login")

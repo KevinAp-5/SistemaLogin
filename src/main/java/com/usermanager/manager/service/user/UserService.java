@@ -1,7 +1,9 @@
 package com.usermanager.manager.service.user;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,7 @@ import com.usermanager.manager.repository.UserRepository;
 import com.usermanager.manager.service.auth.VerificationTokenService;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -105,5 +108,20 @@ public class UserService {
         userToDelete.setIsEnabled(false);
         userRepository.save(userToDelete);
         return true;
+    }
+
+    @Transactional
+    public void saveUser(@Valid User user) {
+        this.userRepository.save(user);
+    }
+
+    public User findUserByLogin(@NotBlank String login) {
+        return (User) userRepository.findByLogin(login).orElseThrow(
+            () -> new UserNotFoundException("with login: " + login)
+        );
+    }
+
+    public Optional<UserDetails> findUserByLoginOptional(@NotBlank String login) {
+        return userRepository.findByLogin(login);
     }
 }
