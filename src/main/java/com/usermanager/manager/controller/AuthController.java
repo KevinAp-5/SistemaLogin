@@ -12,11 +12,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.usermanager.manager.dto.authentication.ActivateUserDTO;
 import com.usermanager.manager.dto.authentication.AuthenticationDTO;
+import com.usermanager.manager.dto.authentication.CreateUserDTO;
 import com.usermanager.manager.dto.authentication.LoginResponseDTO;
 import com.usermanager.manager.dto.authentication.PasswordResetDTO;
+import com.usermanager.manager.dto.authentication.UserCreatedDTO;
 import com.usermanager.manager.dto.authentication.UserEmailDTO;
 import com.usermanager.manager.dto.common.ResponseMessage;
-import com.usermanager.manager.dto.user.UserDTO;
 import com.usermanager.manager.service.auth.AuthService;
 import com.usermanager.manager.service.auth.VerificationTokenService;
 import com.usermanager.manager.service.user.UserService;
@@ -42,8 +43,8 @@ public class AuthController {
     }
 
     @PostMapping("register")
-    public ResponseEntity<UserDTO> createUser(@RequestBody @Valid UserDTO dto) {
-        UserDTO response = userService.createUser(dto);
+    public ResponseEntity<UserCreatedDTO> createUser(@RequestBody @Valid CreateUserDTO dto) {
+        UserCreatedDTO response = userService.createUser(dto);
         return ResponseEntity.created(UriComponentsBuilder.fromPath("/api/users")
                 .path("/{id}")
                 .buildAndExpand(response.id())

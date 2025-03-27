@@ -20,6 +20,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -28,6 +29,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,9 +47,11 @@ public class User implements UserDetails {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private UserRole role;
+    @Builder.Default
+    private UserRole role = UserRole.USER;
 
     @Column(name = "is_enabled")
+    @Builder.Default
     private Boolean isEnabled = false;
 
     @Override

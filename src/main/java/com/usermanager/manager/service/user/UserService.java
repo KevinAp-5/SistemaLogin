@@ -8,6 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.usermanager.manager.dto.authentication.CreateUserDTO;
+import com.usermanager.manager.dto.authentication.UserCreatedDTO;
 import com.usermanager.manager.dto.user.DeleteByLoginDTO;
 import com.usermanager.manager.dto.user.UserDTO;
 import com.usermanager.manager.dto.user.UserResponseDTO;
@@ -16,6 +18,7 @@ import com.usermanager.manager.exception.user.UserNotFoundException;
 import com.usermanager.manager.infra.mail.MailService;
 import com.usermanager.manager.mappers.UserMapper;
 import com.usermanager.manager.model.user.User;
+import com.usermanager.manager.model.user.UserRole;
 import com.usermanager.manager.model.verification.VerificationToken;
 import com.usermanager.manager.model.verification.enums.TokenType;
 import com.usermanager.manager.repository.UserRepository;
@@ -27,7 +30,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 @Service
-public class UserService {
+public class  UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
@@ -44,22 +47,32 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO createUser(@NotNull @Valid UserDTO dto) {
+    public UserCreatedDTO createUser(@NotNull @Valid CreateUserDTO dto) {
         if (userRepository.findByLogin(dto.login()).isPresent()) {
             throw new UserExistsException(dto.login());
         }
 
-        User user = userMapper.userDTOToUser(dto);
-        String encryptedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encryptedPassword);
+        String encryptedPassword = passwordEncoder.encode(dto.password());
+        User user = User.builder()
+                .name(dto.name())
+                .login(dto.login())
+                .role(UserRole.USER)
+                .password(encryptedPassword)
+                .build();
 
         user = userRepository.save(user);
 
-        VerificationToken verificationToken = verificationService.generateVerificationToken(user, TokenType.EMAIL_VALIDATION);
+        VerificationToken verificationToken = verificationService.generateVerificationToken(user,
+                TokenType.EMAIL_VALIDATION);
 
         mailService.sendVerificationMail(user.getLogin(), verificationToken.getUuid().toString());
 
-        return userMapper.userToUserDTO(user);
+        return new UserCreatedDTO(
+            user.getId(),
+            user.getName(),
+            user.getLogin(),
+            user.getIsEnabled()
+        );
     }
 
     @Transactional
@@ -103,7 +116,8 @@ public class UserService {
     @Transactional
     public boolean deleteUserByLogin(@Valid DeleteByLoginDTO data) {
         User userToDelete = (User) userRepository.findByLogin(data.email()).orElse(null);
-        if (userToDelete == null) return false;
+        if (userToDelete == null)
+            return false;
 
         userToDelete.setIsEnabled(false);
         userRepository.save(userToDelete);
@@ -117,8 +131,7 @@ public class UserService {
 
     public User findUserByLogin(@NotBlank String login) {
         return (User) userRepository.findByLogin(login).orElseThrow(
-            () -> new UserNotFoundException("with login: " + login)
-        );
+                () -> new UserNotFoundException("with login: " + login));
     }
 
     public Optional<UserDetails> findUserByLoginOptional(@NotBlank String login) {
