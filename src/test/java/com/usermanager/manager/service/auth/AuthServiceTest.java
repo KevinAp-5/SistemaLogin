@@ -197,10 +197,10 @@ class AuthServiceTest {
         VerificationToken verificationToken = new VerificationToken();
         verificationToken.setUser(user);
 
-        when(verificationService.findVerificationByToken(testToken)).thenReturn(verificationToken);
+        when(verificationService.findVerificationByToken(UUID.fromString(testToken))).thenReturn(verificationToken);
         when(passwordEncoder.encode(dto.newPassword())).thenReturn("newEncodedPassword");
 
-        authService.passwordReset(testToken, dto);
+        authService.passwordReset(UUID.fromString(testToken), dto);
 
         // Verify password update
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);

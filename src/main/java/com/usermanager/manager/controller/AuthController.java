@@ -77,7 +77,7 @@ public class AuthController {
     @PostMapping("password/reset")
     public ResponseEntity<ResponseMessage> confirmPasswordReset(@RequestParam @NotBlank String token,
     @RequestBody @Valid PasswordResetDTO data) {
-        authService.passwordReset(token, data);
+        authService.passwordReset(convertStringToUUID(token), data);
 
         return ResponseEntity.ok().body(new ResponseMessage("Password changed successfully."));
     }

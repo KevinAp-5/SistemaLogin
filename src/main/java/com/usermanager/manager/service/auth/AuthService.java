@@ -1,6 +1,7 @@
 package com.usermanager.manager.service.auth;
 
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -105,8 +106,8 @@ public class AuthService implements UserDetailsService {
     }
 
     @Transactional
-    public void passwordReset(@NotBlank String resetToken, @Valid PasswordResetDTO data) {
-        var verificationToken = verificationService.findVerificationByToken(resetToken);
+    public void passwordReset(@NotBlank UUID token, @Valid PasswordResetDTO data) {
+        var verificationToken = verificationService.findVerificationByToken(token);
         User user = verificationToken.getUser();
         log.info("user {} has requested a password change.", user.getLogin());
 
@@ -120,4 +121,5 @@ public class AuthService implements UserDetailsService {
         verificationToken.setActivated(true);
         verificationService.saveVerificationToken(verificationToken);
     }
+
 }

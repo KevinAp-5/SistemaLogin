@@ -67,9 +67,8 @@ public class VerificationTokenService {
         return true;
     }
 
-    public VerificationToken findVerificationByToken(@Valid @NotBlank String token) {
-        UUID uuid = UUID.fromString(token);
-        var verificationToken = verificationRepository.findByUuid(uuid)
+    public VerificationToken findVerificationByToken(@Valid @NotBlank UUID token) {
+        var verificationToken = verificationRepository.findByUuid(token)
                 .orElseThrow(() -> new TokenNotFoundException("Verification token not found"));
         
         if (verificationToken.getExpirationDate().isBefore(ZonedDateTime.now().toInstant())) {
