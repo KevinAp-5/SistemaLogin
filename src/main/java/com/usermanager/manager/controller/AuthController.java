@@ -88,7 +88,7 @@ public class AuthController {
 
     @PostMapping("activate")
     public ResponseEntity<ResponseMessage> activateUser(@RequestBody @Valid ActivateUserDTO data) {
-        boolean activationSent = authService.activateUser(data.email());
+        boolean activationSent = authService.sendActivationCode(data.email());
         if (!activationSent)
             return ResponseEntity.status(200)
                     .body(new ResponseMessage("User is already active with email: " + data.email()));

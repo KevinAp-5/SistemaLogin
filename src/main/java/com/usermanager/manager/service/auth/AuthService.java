@@ -71,7 +71,7 @@ public class AuthService implements UserDetailsService {
         }
 
         if (!passwordEncoder.matches(data.password(), user.getPassword())) {
-            throw new BadCredentialsException("Bad cretentials: verify login or password.");
+            throw new BadCredentialsException("Bad credentials: verify login or password.");
         }
 
         Authentication auth = authenticationManager.authenticate(usernamePassword);
@@ -79,7 +79,7 @@ public class AuthService implements UserDetailsService {
         return tokenProvider.generateToken((User) auth.getPrincipal());
     }
 
-    public boolean activateUser(@Email @NotBlank String email) {
+    public boolean sendActivationCode(@Email @NotBlank String email) {
         User user = userService.findUserByLogin(email);
 
         if (user.isEnabled()) {
