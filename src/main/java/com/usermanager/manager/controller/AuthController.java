@@ -1,5 +1,7 @@
 package com.usermanager.manager.controller;
 
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +20,7 @@ import com.usermanager.manager.dto.authentication.PasswordResetDTO;
 import com.usermanager.manager.dto.authentication.UserCreatedDTO;
 import com.usermanager.manager.dto.authentication.UserEmailDTO;
 import com.usermanager.manager.dto.common.ResponseMessage;
+import com.usermanager.manager.exception.authentication.TokenInvalidException;
 import com.usermanager.manager.service.auth.AuthService;
 import com.usermanager.manager.service.auth.VerificationTokenService;
 import com.usermanager.manager.service.user.UserService;
@@ -54,10 +57,11 @@ public class AuthController {
 
     @GetMapping("register/confirm")
     public ResponseEntity<ResponseMessage> confirmUser(@RequestParam("token") @NotBlank String token) {
-        boolean validated = verificationService.confirmVerificationToken(token);
+        boolean validated = verificationService.confirmVerificationToken(convertStringToUUID(token));
         if (validated) {
             return ResponseEntity.ok(new ResponseMessage("User confirmed with success."));
         }
+
         return ResponseEntity.badRequest().body(new ResponseMessage("Unable to activate user. Try again later"));
     }
 
@@ -94,5 +98,13 @@ public class AuthController {
                     .body(new ResponseMessage("User is already active with email: " + data.email()));
 
         return ResponseEntity.ok(new ResponseMessage("Activation link sent to " + data.email() + " successfully."));
+    }
+
+    private UUID convertStringToUUID(String token) {
+        try {
+            return UUID.fromString(token);
+        } catch (IllegalArgumentException e) {
+            throw new TokenInvalidException("invalid token format.");
+        }
     }
 }

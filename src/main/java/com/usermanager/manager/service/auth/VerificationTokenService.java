@@ -44,9 +44,9 @@ public class VerificationTokenService {
     }
 
     @Transactional
-    public boolean confirmVerificationToken(@NotBlank String token) {
+    public boolean confirmVerificationToken(@NotBlank UUID token) {
         // Getting the UUID from String prevents attacks like SQL INJECTION
-        VerificationToken verificationToken = verificationRepository.findByUuid(UUID.fromString(token)).orElseThrow(
+        VerificationToken verificationToken = verificationRepository.findByUuid(token).orElseThrow(
             () -> new TokenNotFoundException("Verification token was not found")
         );
 
