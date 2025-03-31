@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -32,9 +33,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.usermanager.manager.dto.authentication.AuthenticationDTO;
 import com.usermanager.manager.dto.authentication.PasswordResetDTO;
+import com.usermanager.manager.dto.authentication.TokensDTO;
 import com.usermanager.manager.dto.authentication.UserEmailDTO;
+import com.usermanager.manager.exception.authentication.TokenInvalidException;
+import com.usermanager.manager.exception.authentication.TokenNotFoundException;
 import com.usermanager.manager.exception.user.UserNotEnabledException;
 import com.usermanager.manager.infra.mail.MailService;
+import com.usermanager.manager.model.security.RefreshToken;
 import com.usermanager.manager.model.security.TokenProvider;
 import com.usermanager.manager.model.user.User;
 import com.usermanager.manager.model.user.UserRole;
@@ -61,6 +66,9 @@ class AuthServiceTest {
 
     @Mock
     private MailService mailService;
+
+    @Mock
+    private RefreshTokenService refreshTokenService;
 
     @InjectMocks
     private AuthService authService;
@@ -112,10 +120,11 @@ class AuthServiceTest {
                 .thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(user);
         when(tokenProvider.generateToken(user)).thenReturn(testToken);
+        when(refreshTokenService.createRefreshToken(user)).thenReturn("refreshToken");
 
-        String result = authService.login(authenticationDTO);
-
-        assertEquals(testToken, result);
+        TokensDTO result = authService.login(authenticationDTO);
+        assertEquals(testToken, result.accessToken());
+        assertEquals("refreshToken", result.refreshToken());
         verify(authenticationManager).authenticate(any());
     }
 
@@ -191,16 +200,17 @@ class AuthServiceTest {
         verifyNoInteractions(verificationService, mailService);
     }
 
- @Test
+    @Test
     void passwordReset_ValidToken_UpdatesPasswordAndToken() {
+        UUID testUUID = UUID.randomUUID();
         PasswordResetDTO dto = new PasswordResetDTO("newPassword");
         VerificationToken verificationToken = new VerificationToken();
         verificationToken.setUser(user);
 
-        when(verificationService.findVerificationByToken(UUID.fromString(testToken))).thenReturn(verificationToken);
+        when(verificationService.findVerificationByToken(testUUID)).thenReturn(verificationToken);
         when(passwordEncoder.encode(dto.newPassword())).thenReturn("newEncodedPassword");
 
-        authService.passwordReset(UUID.fromString(testToken), dto);
+        authService.passwordReset(testUUID, dto);
 
         // Verify password update
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
@@ -212,5 +222,66 @@ class AuthServiceTest {
         verify(verificationService).saveVerificationToken(tokenCaptor.capture());
         assertTrue(tokenCaptor.getValue().isActivated());
         assertNotNull(tokenCaptor.getValue().getActivationDate());
+    }
+
+    @Test
+    void refreshToken_ShouldReturnNewTokens_WhenRefreshTokenIsValid() {
+        String oldRefreshToken = "oldRefreshToken";
+        String newAccessToken = "newAccessToken";
+        String newRefreshToken = "newRefreshToken";
+
+        RefreshToken refreshToken = new RefreshToken();
+        refreshToken.setToken(oldRefreshToken);
+        refreshToken.setUser(user);
+
+        when(refreshTokenService.findByToken(oldRefreshToken)).thenReturn(refreshToken);
+        when(tokenProvider.generateToken(user)).thenReturn(newAccessToken);
+        when(refreshTokenService.createRefreshToken(user)).thenReturn(newRefreshToken);
+
+        TokensDTO result = authService.refreshToken(oldRefreshToken);
+
+        assertEquals(newAccessToken, result.accessToken());
+        assertEquals(newRefreshToken, result.refreshToken());
+        verify(refreshTokenService).invalidateToken(oldRefreshToken);
+    }
+
+    @Test
+    void refreshToken_ShouldThrowException_WhenRefreshTokenNotFound() {
+        String invalidToken = "invalidToken";
+
+        when(refreshTokenService.findByToken(invalidToken)).thenThrow(new TokenNotFoundException("Refresh Token not found"));
+
+        assertThrows(TokenNotFoundException.class, () -> authService.refreshToken(invalidToken));
+        verify(refreshTokenService, never()).invalidateToken(anyString());
+    }
+
+    @Test
+    void refreshToken_ShouldThrowException_WhenRefreshTokenIsExpired() {
+        String expiredToken = "expiredToken";
+
+        // Simula o comportamento do método findByToken lançando TokenInvalidException
+        when(refreshTokenService.findByToken(expiredToken))
+            .thenThrow(new TokenInvalidException("Refresh Token expired"));
+
+        // Verifica se a exceção é lançada ao chamar o método refreshToken
+        assertThrows(TokenInvalidException.class, () -> authService.refreshToken(expiredToken));
+
+        // Garante que o método invalidateToken nunca é chamado
+        verify(refreshTokenService, never()).invalidateToken(anyString());
+    }
+
+    @Test
+    void refreshToken_ShouldThrowException_WhenRefreshTokenIsAlreadyUsed() {
+        String usedToken = "usedToken";
+
+        // Simula o comportamento do método findByToken lançando TokenInvalidException
+        when(refreshTokenService.findByToken(usedToken))
+            .thenThrow(new TokenInvalidException("Refresh Token already used"));
+
+        // Verifica se a exceção é lançada ao chamar o método refreshToken
+        assertThrows(TokenInvalidException.class, () -> authService.refreshToken(usedToken));
+
+        // Garante que o método invalidateToken nunca é chamado
+        verify(refreshTokenService, never()).invalidateToken(anyString());
     }
 }
