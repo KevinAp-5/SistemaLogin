@@ -96,7 +96,7 @@ public class AuthService implements UserDetailsService {
         String accessToken = tokenProvider.generateToken(refreshToken.getUser());
         String newRefreshToken = refreshTokenService.createRefreshToken(refreshToken.getUser());
 
-        refreshTokenService.invalidateToken(newRefreshToken);
+        refreshTokenService.invalidateToken(token);
         log.info("user {} sucessfully generated refresh token", refreshToken.getUser().getLogin());
         return new TokensDTO(accessToken, newRefreshToken);
     }
