@@ -101,8 +101,6 @@ class RefreshTokenServiceTest {
         // Verify all attributes of the RefreshToken entity
         assertEquals(user, savedRefreshToken.getUser());
         assertEquals(generatedToken, savedRefreshToken.getToken());
-        assertNotNull(savedRefreshToken.getCreatedAt());
-        assertNotNull(savedRefreshToken.getExpiresAt());
         assertEquals(false, savedRefreshToken.getUsed());
         assertTrue(savedRefreshToken.getExpiresAt().isAfter(savedRefreshToken.getCreatedAt()));
     }
