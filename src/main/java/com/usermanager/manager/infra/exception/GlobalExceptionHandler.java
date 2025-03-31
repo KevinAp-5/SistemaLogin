@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.usermanager.manager.dto.common.ResponseMessage;
 import com.usermanager.manager.exception.authentication.TokenInvalid;
+import com.usermanager.manager.exception.authentication.TokenInvalidException;
 import com.usermanager.manager.exception.authentication.TokenNotFoundException;
 import com.usermanager.manager.exception.user.UserExistsException;
 import com.usermanager.manager.exception.user.UserNotEnabledException;
@@ -60,8 +61,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(404).body(new ResponseMessage("Token error: " + ex.getMessage()));
     }
 
+    @ExceptionHandler(TokenInvalidException.class)
+    public ResponseEntity<ResponseMessage> handleTokenInvalidException(TokenInvalidException ex) {
+        return ResponseEntity.status(401).body(new ResponseMessage("Token expired or invalid: " + ex.getMessage()));
+    }
+
     @ExceptionHandler(TokenInvalid.class)
-    public ResponseEntity<ResponseMessage> handleTokenInvalid(TokenInvalid ex) {
-        return ResponseEntity.status(410).body(new ResponseMessage("Token expired or invalid: " + ex.getMessage()));
+    public ResponseEntity<ResponseMessage> handleTokenInvalid(TokenInvalidException ex) {
+        return ResponseEntity.status(401).body(new ResponseMessage("Token expired or invalid: " + ex.getMessage()));
     }
 }
