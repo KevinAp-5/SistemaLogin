@@ -131,7 +131,7 @@ public class  UserService {
 
     public User findUserByLogin(@NotBlank String login) {
         return (User) userRepository.findByLogin(login).orElseThrow(
-                () -> new UserNotFoundException("with login: " + login));
+                () -> new UserNotFoundException(login));
     }
 
     public Optional<UserDetails> findUserByLoginOptional(@NotBlank String login) {
