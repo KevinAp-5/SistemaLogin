@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: login
+  datasource:
+    url: jdbc:postgresql://localhost:5432/login
+    username: keven
+    password: ${db_password}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${mail_username}
+    password: ${mail_password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+server:
+  error:
+    include-stacktrace: never
+  port: 8080
+  tomcat:
+    threads:
+      max: 22
+      min-spare: 2
+    accept-count: 100
+    connection-timeout: 5000
+    keep-alive-timeout: 60000
+    max-connections: 100
+logging:
+  level:
+    org:
+      springframework:
+        security: TRACE
+api:
+  security:
+    token:
+      secret: ${jwt_secret:my-secret-key}
+      refresh:
+        expiration: 10080
+
+resilience4j:
+  ratelimiter:
+    instances:
+      apiLimiter:
+        limitForPeriod: 10
+        limitRefreshPeriod: PT1M # ISO-8601 duration format for 1 minute
+        timeoutDuration: 0
