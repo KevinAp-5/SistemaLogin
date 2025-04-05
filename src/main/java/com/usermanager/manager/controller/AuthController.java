@@ -37,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/auth/")
 @Slf4j
 public class AuthController {
+    private static final int COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // 7 days in seconds
 
     private final AuthService authService;
     private final UserService userService;
@@ -88,10 +89,8 @@ public class AuthController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid AuthenticationDTO data,
-            HttpServletResponse response) {
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid AuthenticationDTO data, HttpServletResponse response) {
         TokensDTO tokens = authService.login(data);
-
         response.addCookie(createCookie("refreshToken", tokens.refreshToken()));
         return ResponseEntity.ok().body(new LoginResponseDTO(tokens.accessToken()));
     }
@@ -100,10 +99,8 @@ public class AuthController {
     public ResponseEntity<LoginResponseDTO> refreshToken(
             @CookieValue(name = "refreshToken", defaultValue = "") String token, HttpServletResponse response) {
 
-        if (token.isBlank()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new LoginResponseDTO("Refresh token is missing."));
-        }
+        if (token.isBlank())
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginResponseDTO("Refresh token is missing."));
 
         TokensDTO newTokens = authService.refreshToken(token);
 
@@ -125,9 +122,8 @@ public class AuthController {
         Cookie cookie = new Cookie(name, value);
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
-        cookie.setPath("/");
         cookie.setAttribute("SameSite", "Strict");
-        cookie.setMaxAge(7 * 24 * 60 * 60); // 7 days
+        cookie.setMaxAge(COOKIE_MAX_AGE);
         return cookie;
     }
 

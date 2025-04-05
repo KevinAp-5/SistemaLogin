@@ -71,7 +71,7 @@ public class AuthService implements UserDetailsService {
         
         if (!user.isEnabled()) {
             log.info("user {} not enabled. unable to login", data.login());
-            throw new UserNotEnabledException("User not enabled. Please activate the email " + user.getLogin());
+            throw new UserNotEnabledException("Please activate the email " + user.getLogin());
         }
 
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.login(), data.password());

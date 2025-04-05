@@ -42,7 +42,7 @@ public class SecurityConfigurations {
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.setContentType("application/json");
-                            response.getWriter().write("{\"error\": \"Não autorizado\"}");
+                            response.getWriter().write("{\"error\": \"Not authorized\"}");
                         }))
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

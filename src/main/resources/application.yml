@@ -44,11 +44,3 @@ api:
       secret: ${jwt_secret:my-secret-key}
       refresh:
         expiration: 10080
-
-resilience4j:
-  ratelimiter:
-    instances:
-      apiLimiter:
-        limitForPeriod: 10
-        limitRefreshPeriod: PT1M # ISO-8601 duration format for 1 minute
-        timeoutDuration: 0
