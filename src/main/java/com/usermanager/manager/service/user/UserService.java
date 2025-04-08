@@ -52,6 +52,10 @@ public class  UserService {
             throw new UserExistsException(dto.login());
         }
 
+        if (!dto.password().matches("^(?=.*\\d)[A-Za-z\\d]{8,}$")) {
+            throw new IllegalArgumentException("Password must be at least 8 characters long and contain at least one digit.");
+        }
+
         String encryptedPassword = passwordEncoder.encode(dto.password());
         User user = User.builder()
                 .name(dto.name())
