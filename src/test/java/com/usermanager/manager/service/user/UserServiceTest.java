@@ -78,7 +78,7 @@ class UserServiceTest {
     @Test
     void createUser_Success() {
         // Arrange
-        CreateUserDTO dto = new CreateUserDTO("Test User", "test@example.com", "password");
+        CreateUserDTO dto = new CreateUserDTO("Test User", "test@example.com", "password123");
         VerificationToken mockToken = new VerificationToken();
         mockToken.setUuid(testUuid);
 
@@ -94,7 +94,7 @@ class UserServiceTest {
         // Assert
         assertNotNull(result);
         assertEquals(user.getId(), result.id());
-        verify(mailService).sendVerificationMail(dto.login(), testUuid.toString());
+        verify(mailService).sendVerificationMail(eq(dto.login()), eq(testUuid.toString()));
     }
 
     // Teste para createUser - Usuário já existe
