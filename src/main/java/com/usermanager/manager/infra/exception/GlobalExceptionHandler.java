@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.usermanager.manager.dto.common.ResponseMessage;
+import com.usermanager.manager.exception.authentication.PasswordFormatNotValidException;
 import com.usermanager.manager.exception.authentication.TokenInvalid;
 import com.usermanager.manager.exception.authentication.TokenInvalidException;
 import com.usermanager.manager.exception.authentication.TokenNotFoundException;
@@ -69,5 +70,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(TokenInvalid.class)
     public ResponseEntity<ResponseMessage> handleTokenInvalid(TokenInvalidException ex) {
         return ResponseEntity.status(401).body(new ResponseMessage("Token expired or invalid: " + ex.getMessage()));
+    }
+
+    @ExceptionHandler(PasswordFormatNotValidException.class)
+    public ResponseEntity<ResponseMessage> handlePasswordFormatNotValid(PasswordFormatNotValidException ex) {
+        return ResponseEntity.status(400).body(new ResponseMessage("Password format not valid: " + ex.getMessage()));
     }
 }

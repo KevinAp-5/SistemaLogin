@@ -13,6 +13,7 @@ import com.usermanager.manager.dto.authentication.UserCreatedDTO;
 import com.usermanager.manager.dto.user.DeleteByLoginDTO;
 import com.usermanager.manager.dto.user.UserDTO;
 import com.usermanager.manager.dto.user.UserResponseDTO;
+import com.usermanager.manager.exception.authentication.PasswordFormatNotValidException;
 import com.usermanager.manager.exception.user.UserExistsException;
 import com.usermanager.manager.exception.user.UserNotFoundException;
 import com.usermanager.manager.infra.mail.MailService;
@@ -28,8 +29,10 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class  UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -52,8 +55,9 @@ public class  UserService {
             throw new UserExistsException(dto.login());
         }
 
-        if (!dto.password().matches("^(?=.*\\d)[A-Za-z\\d]{8,}$")) {
-            throw new IllegalArgumentException("Password must be at least 8 characters long and contain at least one digit.");
+        if (!dto.password().matches("^(?=.*\\d).{8,}$")) {
+            log.error("Password not match: {}", dto.password());
+            throw new PasswordFormatNotValidException("Password must be at least 8 characters long and contain at least one digit.");
         }
 
         String encryptedPassword = passwordEncoder.encode(dto.password());
