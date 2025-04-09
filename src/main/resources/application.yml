@@ -5,6 +5,12 @@ spring:
     url: jdbc:postgresql://localhost:5432/login
     username: keven
     password: ${db_password}
+    hikari:
+      maximum-pool-size: 50 # Número máximo de conexões no pool
+      minimum-idle: 10 # Número mínimo de conexões ociosas
+      idle-timeout: 30000 # Tempo máximo que uma conexão pode ficar ociosa
+      max-lifetime: 1800000 # Tempo máximo de vida de uma conexão
+      connection-timeout: 20000 # Timeout para obter uma conexão do pool
   jpa:
     hibernate:
       ddl-auto: validate
@@ -32,7 +38,7 @@ server:
     accept-count: 100
     connection-timeout: 5000
     keep-alive-timeout: 60000
-    max-connections: 100
+    max-connections: 10000
 logging:
   level:
     org:
@@ -44,3 +50,11 @@ api:
       secret: ${jwt_secret:my-secret-key}
       refresh:
         expiration: 10080
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics
+  metrics:
+    enable:
+      all: true
