@@ -40,6 +40,7 @@ public class SecurityConfigurations {
                 .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/users").hasRole("ADMIN")
+                .requestMatchers("/actuator/**").permitAll()
                 .anyRequest().authenticated() // Exige autenticação para qualquer outra coisa
             )
             .exceptionHandling(exception -> exception
