@@ -1,8 +1,6 @@
 package com.usermanager.manager.infra.exception;
 
 
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,8 +16,10 @@ import com.usermanager.manager.exception.user.UserExistsException;
 import com.usermanager.manager.exception.user.UserNotEnabledException;
 import com.usermanager.manager.exception.user.UserNotFoundException;
 
+import lombok.extern.slf4j.Slf4j;
+
 @ControllerAdvice
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserExistsException.class)
@@ -49,13 +49,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseMessage> handleException(Exception ex) {
+        log.error("", ex);
         return ResponseEntity.status(500).body(new ResponseMessage("Error: " + ex.getMessage()));
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ResponseMessage> handleRuntimeException(RuntimeException ex) {
-        return ResponseEntity.status(500).body(new ResponseMessage("Error: " + ex.getMessage()));
-    }
 
     @ExceptionHandler(TokenNotFoundException.class)
     public ResponseEntity<ResponseMessage> handleTokenNotFoundException(TokenNotFoundException ex) {
@@ -68,7 +65,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(TokenInvalid.class)
-    public ResponseEntity<ResponseMessage> handleTokenInvalid(TokenInvalidException ex) {
+    public ResponseEntity<ResponseMessage> handleTokenInvalid(TokenInvalid ex) {
         return ResponseEntity.status(401).body(new ResponseMessage("Token expired or invalid: " + ex.getMessage()));
     }
 
